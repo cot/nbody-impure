@@ -8,9 +8,6 @@ INC    = -I/inc
 
 all: tout
 
-debug: CC += -DDEBUG -DMATRIX -g
-debug: tout
-
 profile: CC += -DPROFILE -g -pg
 profile: tout
 
