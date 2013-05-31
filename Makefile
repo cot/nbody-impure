@@ -5,7 +5,6 @@ LFLAGS = -fPIC -shared
 SRC    = src
 BIN    = bin
 INC    = -I/inc
-LIB    = lib
 
 all: tout
 
@@ -22,10 +21,10 @@ optim: CC += -O3
 optim: nbody
 
 nbody: $(SRC)/nbody.c 
-	$(CC) $(INC) $(SRC)/nbody.c $(LIB)/* -o $(BIN)/nbody $(CFLAGS)
+	$(CC) $(INC) $(SRC)/nbody.c -o $(BIN)/nbody $(CFLAGS)
 
 clean:
 	rm -rf *.o $(BIN)/nbody 
 
 veryclean :
-	rm -rf $(BIN)/nbody $(LIB)/*.so 
+	rm -rf $(BIN)/nbody 
