@@ -146,8 +146,6 @@ int main(int argc,char *argv[]) {
 	gettimeofday(&endbase, NULL);
 	printf("duree en mode basique = \t");
 	printf(" %ld\n", ((endbase.tv_sec * 1000000 + endbase.tv_usec) - (debbase.tv_sec * 1000000 + debbase.tv_usec)));
-	printf("rX[%i] = %g \n",npart-1,rX[npart-1]);
-	printf("rY[%i] = %g \n",1,rY[1]);
 	printf("_________________________________________________________________________\n\n");
 /* Fin de l'implementation du probleme en mode basique */
 /* ------------------------------------------------------------------------ */
@@ -209,8 +207,6 @@ int main(int argc,char *argv[]) {
 	gettimeofday(&endmat, NULL);
 	printf("duree en mode matrix = \t");
 	printf(" %ld\n", ((endmat.tv_sec * 1000000 + endmat.tv_usec) - (debmat.tv_sec * 1000000 + debmat.tv_usec)));
-	printf("rX[%i] = %g \n",npart-1,rX[npart-1]);
-	printf("rY[%i] = %g \n",1,rY[1]);
 	printf("_________________________________________________________________________\n\n");
 /* Fin de l'implementation du probleme en mode matrix */
 /* ------------------------------------------------------------------------ */
@@ -263,8 +259,6 @@ int main(int argc,char *argv[]) {
 	gettimeofday(&endsse, NULL);
 	printf("duree en mode sse = \t");
 	printf("%ld\n", ((endsse.tv_sec * 1000000 + endsse.tv_usec) - (debsse.tv_sec * 1000000 + debsse.tv_usec)));
-	printf("rXsse[%i] = %g \n",npart-1,rXsse[npart-1]);
-	printf("rYsse[%i] = %g \n",1,rYsse[1]);
 	printf("_________________________________________________________________________\n\n");
 /* Fin de l'implementation du probleme en mode sse */
 /* ------------------------------------------------------------------------ */
