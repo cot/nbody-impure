@@ -26,5 +26,3 @@ nbody: $(SRC)/nbody.c
 clean:
 	rm -rf *.o $(BIN)/nbody 
 
-veryclean :
-	rm -rf $(BIN)/nbody 
