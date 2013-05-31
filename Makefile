@@ -1,4 +1,4 @@
-CC     = mpicc
+CC     = gcc
 CFLAGS = -lm -W -Wall -ansi -pedantic -std=c99
 LFLAGS = -fPIC -shared
 

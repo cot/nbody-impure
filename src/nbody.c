@@ -27,17 +27,6 @@ typedef char * caddr_t;
 
 int main(int argc,char *argv[]) {
 
-	int prank, psize;
-	MPI_File DataFile;
-
-	MPI_Init(&argc,&argv);
-	MPI_Comm_rank(MPI_COMM_WORLD,&prank);
-	MPI_Comm_size(MPI_COMM_WORLD,&psize);
-
-	if(MPI_File_open( MPI_COMM_WORLD, "Data", MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL,&DataFile )) {
-		printf( "Unable to open file \"Data\"\n" );
-		fflush(stdout); 
-	}
 
 	int i,j,k,l,m;
 
@@ -94,9 +83,6 @@ int main(int argc,char *argv[]) {
         struct timeval debbase, endbase;
         struct timeval debmat, endmat;
         struct timeval debsse, endsse;
-
-/*	MPI_File_read_at(DataFile, prank*bufsize, buf, nints, MPI_INT, &status);*/
-	printf("nprocs = %i and rank = %i \n",psize,prank);
 
 /* ------------------------------------------------------------------------ */
 /* Initialisation des structures de donnees */
@@ -258,9 +244,6 @@ int main(int argc,char *argv[]) {
 	printf("_________________________________________________________________________\n\n");
 /* Fin de l'implementation du probleme en mode sse */
 /* ------------------------------------------------------------------------ */
-
-	MPI_File_close( &DataFile );
-	MPI_Finalize();
 
 	return EXIT_SUCCESS;
 

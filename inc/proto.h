@@ -10,11 +10,9 @@
  * \param dim dimension spatiale du probleme
  */
 #include <unistd.h>
-#include "mpi.h"
-
 #include <emmintrin.h>
 
-#define npart 100000
+#define npart 10000
 #define niter 1
 #define deltat 0.001 
 
