@@ -200,9 +200,9 @@ int main(int argc,char *argv[]) {
 		}
 #ifdef CHECK
 		for(i=0;i<npart;i++) {
-			if(rX[i] != rcheck[i].X) {printf("rX[%i] = %g et rcheck[%i].X = %g\n",i,rX[i],i,rcheck[i].X);  }
-			if(rY[i] != rcheck[i].Y) {printf("rY[%i] = %g et rcheck[%i].Y = %g\n",i,rY[i],i,rcheck[i].Y);  }
-			if(rZ[i] != rcheck[i].Z) {printf("rZ[%i] = %g et rcheck[%i].Z = %g\n",i,rZ[i],i,rcheck[i].Z);  }
+			if((rX[i] - rcheck[i].X) > 1.e-9 ) {printf("rX[%i] = %f et rcheck[%i].X = %f\n",i,rX[i],i,rcheck[i].X);  }
+			if((rY[i] - rcheck[i].Y) > 1.e-9 ) {printf("rY[%i] = %f et rcheck[%i].Y = %f\n",i,rY[i],i,rcheck[i].Y);  }
+			if((rZ[i] - rcheck[i].Z) > 1.e-9 ) {printf("rZ[%i] = %f et rcheck[%i].Z = %f\n",i,rZ[i],i,rcheck[i].Z);  }
 		}
 #endif
 	}
@@ -252,8 +252,14 @@ int main(int argc,char *argv[]) {
 		rYsse[i] = rYsse[i] + deltat * FY / rM[i];
 		rZsse[i] = rZsse[i] + deltat * FZ / rM[i];
 		}
+#ifdef CHECK
+		for(i=0;i<npart;i++) {
+			if((rXsse[i] - rcheck[i].X) > 1.e-6 ) {printf("rXsse[%i] = %f et rcheck[%i].X = %f\n",i,rXsse[i],i,rcheck[i].X);  }
+			if((rYsse[i] - rcheck[i].Y) > 1.e-6 ) {printf("rYsse[%i] = %f et rcheck[%i].Y = %f\n",i,rYsse[i],i,rcheck[i].Y);  }
+			if((rZsse[i] - rcheck[i].Z) > 1.e-6 ) {printf("rZsse[%i] = %f et rcheck[%i].Z = %f\n",i,rZsse[i],i,rcheck[i].Z);  }
+		}
+#endif
 	}
-
 	gettimeofday(&endsse, NULL);
 	printf("duree en mode sse = \t");
 	printf("%ld\n", ((endsse.tv_sec * 1000000 + endsse.tv_usec) - (debsse.tv_sec * 1000000 + debsse.tv_usec)));
