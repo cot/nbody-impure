@@ -34,13 +34,19 @@ int main(int argc,char *argv[]) {
 /* Structure en mode basique */
 
         struct position* __attribute__ ((aligned (32))) r;
+#ifdef CHECK
+        struct position* __attribute__ ((aligned (32))) rcheck;
+#endif
 
         struct position u;
         struct force F;
         double res0;
         double vit;
 
-	r  = (struct position *)calloc(npart,sizeof(struct position));
+	r       = (struct position *)calloc(npart,sizeof(struct position));
+#ifdef CHECK
+	rcheck  = (struct position *)calloc(npart,sizeof(struct position));
+#endif
 
 
 /* ------------------------------------------------------------------------ */
@@ -129,6 +135,11 @@ int main(int argc,char *argv[]) {
 			r[i].X = r[i].X + deltat * F.X / r[i].M ; 
 			r[i].Y = r[i].Y + deltat * F.Y / r[i].M ;
 			r[i].Z = r[i].Z + deltat * F.Z / r[i].M ;
+#ifdef CHECK
+			rcheck[i].X = r[i].X;
+			rcheck[i].Y = r[i].Y;
+			rcheck[i].Z = r[i].Z;
+#endif
                 }
         }
 
@@ -187,6 +198,13 @@ int main(int argc,char *argv[]) {
 		rY[i] = rY[i] + deltat * FY / rM[i];
 		rZ[i] = rZ[i] + deltat * FZ / rM[i];
 		}
+#ifdef CHECK
+		for(i=0;i<npart;i++) {
+			if(rX[i] != rcheck[i].X) {printf("rX[%i] = %g et rcheck[%i].X = %g\n",i,rX[i],i,rcheck[i].X);  }
+			if(rY[i] != rcheck[i].Y) {printf("rY[%i] = %g et rcheck[%i].Y = %g\n",i,rY[i],i,rcheck[i].Y);  }
+			if(rZ[i] != rcheck[i].Z) {printf("rZ[%i] = %g et rcheck[%i].Z = %g\n",i,rZ[i],i,rcheck[i].Z);  }
+		}
+#endif
 	}
 	gettimeofday(&endmat, NULL);
 	printf("duree en mode matrix = \t");

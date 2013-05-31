@@ -8,6 +8,9 @@ INC    = -I/inc
 
 all: tout
 
+check: CC+= -DCHECK
+check: tout
+
 profile: CC += -DPROFILE -g -pg
 profile: tout
 
