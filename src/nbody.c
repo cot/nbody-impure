@@ -13,15 +13,15 @@ typedef char * caddr_t;
 /**
  *\author François Rué
  *\version 0.1
- *\date 11 avril 2013
+ *\date 31 mai 2013
  *\file nbody.c
  *\brief Probleme a n-corps multidimensionnel 
  */
 
 /*! \fn int main()
- *  \brief Programme principal initialisant les champs (position, masse)
+ *  \brief Programme principal contenant les 3 implementations : basique, matriciel et sse
  *  \param void
- *  \return Les points d'evolution
+ *  \return Les temps d'excecution et les evaluations des champs
  */
 
 
