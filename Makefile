@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -lm -W -Wall -ansi -pedantic -std=c99
+CFLAGS = -lm -W -Wall -ansi -pedantic -std=c99 -m64 
 LFLAGS = -fPIC -shared
 
 SRC    = src
@@ -7,6 +7,9 @@ BIN    = bin
 INC    = -I/inc
 
 all: tout
+
+papi: CC+= -DPAPI -lpapi
+papi: tout
 
 check: CC+= -DCHECK
 check: tout

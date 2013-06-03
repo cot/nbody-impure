@@ -9,6 +9,10 @@
 
 typedef char * caddr_t;
 
+#ifdef PAPI
+#include <papi.h>
+#define NUMEVENTS 2
+#endif
 
 /**
  *\author François Rué
@@ -91,6 +95,26 @@ int main(int argc,char *argv[]) {
         struct timeval debsse, endsse;
 
 /* ------------------------------------------------------------------------ */
+/* Structure des compteurs PAPI */
+
+#ifdef PAPI
+        int retval,event_set=PAPI_NULL;
+        long_long   values[NUMEVENTS];
+        int events[NUMEVENTS] = {PAPI_FP_INS,PAPI_TOT_INS};
+	int PAPI_WRITE;
+
+        /* Initialize PAPI Library */
+        if(PAPI_library_init(PAPI_VER_CURRENT)!=PAPI_VER_CURRENT) exit(1);
+
+        /* Create the eventset */
+        if(PAPI_create_eventset(&event_set)!=PAPI_OK) exit(1);
+
+        PAPI_add_events(event_set, events, 2);
+	
+
+#endif
+
+/* ------------------------------------------------------------------------ */
 /* Initialisation des structures de donnees */
         for (i=0;i<npart;i++) {
 		r[i].M    = 1.89 * ( i + 1 ) ;
@@ -117,10 +141,19 @@ int main(int argc,char *argv[]) {
 
 /* ------------------------------------------------------------------------ */
 /* Implementation du probleme en mode basique array struct */
+#ifdef PAPI
+	PAPI_WRITE = 0;
+#endif
 	gettimeofday(&debbase, NULL);
         for(k=0;k<niter;k++) {
                 for(i=0;i<npart;i++) {
                         for(j=0;j<npart;j++) {
+#ifdef PAPI
+				PAPI_WRITE+=1;
+				if(PAPI_WRITE==1) {
+					if(PAPI_start_counters(events,NUMEVENTS)!=PAPI_OK) exit(1);
+				}
+#endif
                                 u.X = r[i].X - r[j].X ;
                                 u.Y = r[i].Y - r[j].Y ;
                                 u.Z = r[i].Z - r[j].Z ;
@@ -131,6 +164,20 @@ int main(int argc,char *argv[]) {
                                 F.X = res0 * res0 * res0 * u.X;
                                 F.Y = res0 * res0 * res0 * u.Y;
                                 F.Z = res0 * res0 * res0 * u.Z;
+#ifdef PAPI
+				if(PAPI_WRITE==1) {
+					/* Write the number of cache misses for the Loop */
+					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+					printf("\tEn mode basique array struct\n ");
+					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+					/* Stop counting */
+					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+					/* reset the PAPI counters */
+					if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+				}
+#endif
                         }
 			r[i].X = r[i].X + deltat * F.X / r[i].M ; 
 			r[i].Y = r[i].Y + deltat * F.Y / r[i].M ;
@@ -140,20 +187,45 @@ int main(int argc,char *argv[]) {
 			rcheck[i].Y = r[i].Y;
 			rcheck[i].Z = r[i].Z;
 #endif
+#ifdef PAPI
+				if(PAPI_WRITE==1) {
+					/* Write the number of cache misses for the Loop */
+					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+					printf("\tEn mode basique array struct\n ");
+					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+					/* Stop counting */
+					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+					/* reset the PAPI counters */
+					if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+				}
+#endif
                 }
         }
 
 	gettimeofday(&endbase, NULL);
+
+
 	printf("duree en mode basique array struct = \t");
 	printf(" %ld\n", ((endbase.tv_sec * 1000000 + endbase.tv_usec) - (debbase.tv_sec * 1000000 + debbase.tv_usec)));
 	printf("_________________________________________________________________________\n\n");
 /* Fin de l'implementation du probleme en mode basique array struct */
 /* ------------------------------------------------------------------------ */
 /* Implementation du probleme en mode basique struct array */
+#ifdef PAPI
+	PAPI_WRITE = 0;
+#endif
 	gettimeofday(&debbase, NULL);
         for(k=0;k<niter;k++) {
                 for(i=0;i<npart;i++) {
                         for(j=0;j<npart;j++) {
+#ifdef PAPI
+				PAPI_WRITE+=1;
+				if(PAPI_WRITE==1) {
+					if(PAPI_start_counters(events,NUMEVENTS)!=PAPI_OK) exit(1);
+				}
+#endif
                                 u.X = rX[i] - rX[j] ;
                                 u.Y = rY[i] - rY[j] ;
                                 u.Z = rZ[i] - rZ[j] ;
@@ -164,6 +236,20 @@ int main(int argc,char *argv[]) {
                                 F.X = res0 * res0 * res0 * u.X;
                                 F.Y = res0 * res0 * res0 * u.Y;
                                 F.Z = res0 * res0 * res0 * u.Z;
+#ifdef PAPI
+				if(PAPI_WRITE==1) {
+					/* Write the number of cache misses for the Loop */
+					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+					printf("\tEn mode basique struct array\n ");
+					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+					/* Stop counting */
+					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+					/* reset the PAPI counters */
+					if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+				}
+#endif
                         }
 			rX[i] = rX[i] + deltat * F.X / rM[i] ; 
 			rY[i] = rY[i] + deltat * F.Y / rM[i] ;
@@ -185,6 +271,9 @@ int main(int argc,char *argv[]) {
 /* Fin de l'implementation du probleme en mode basique struct array */
 /* ------------------------------------------------------------------------ */
 /* Implementation du probleme en mode matriciel */
+#ifdef PAPI
+	PAPI_WRITE = 0;
+#endif
 	gettimeofday(&debmat, NULL);
 	for(k=0;k<niter;k++) {
 		for(i=0;i<npart;i++) {
@@ -192,6 +281,12 @@ int main(int argc,char *argv[]) {
 		FY = 0.0;
 		FZ = 0.0;
 			for(j=0;j<npart;j++) {
+#ifdef PAPI
+				PAPI_WRITE+=1;
+				if(PAPI_WRITE==1) {
+					if(PAPI_start_counters(events,NUMEVENTS)!=PAPI_OK) exit(1);
+				}
+#endif
 				if(j!=i) {
 
 					uX  = rX[i] - rX[j] ; 
@@ -215,7 +310,26 @@ int main(int argc,char *argv[]) {
                                         m_j[j]       = 2*j;
 				}
 /* Fin de remplissage de la matrice creuse CSR */
+#ifdef PAPI
+				if(PAPI_WRITE==1) {
+					/* Write the number of cache misses for the Loop */
+					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+					printf("\tEn mode matriciel: remplissage\n ");
+					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+					/* Stop counting */
+					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+					/* reset the PAPI counters */
+					if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+				}
+#endif
 			}
+#ifdef PAPI
+			if(i==0) {
+				if(PAPI_start_counters(events,NUMEVENTS)!=PAPI_OK) exit(1);
+			}
+#endif
 			for(l=0;l<npart;l++) {
 				tmp1X = 0.0;
 				tmp1Y = 0.0;
@@ -227,6 +341,20 @@ int main(int argc,char *argv[]) {
 				tmp1Z = tmp1Z + m_val[l] * rZ[tmp2];
 				}
 			}
+#ifdef PAPI
+			if(i==0) {
+				/* Write the number of cache misses for the Loop */
+				if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+				printf("\tEn mode matriciel: calcul\n ");
+				printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+				printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+				/* Stop counting */
+				if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+				/* reset the PAPI counters */
+				if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+			}
+#endif
 		rX[i] = rX[i] + deltat * FX / rM[i];
 		rY[i] = rY[i] + deltat * FY / rM[i];
 		rZ[i] = rZ[i] + deltat * FZ / rM[i];
@@ -246,9 +374,18 @@ int main(int argc,char *argv[]) {
 /* Fin de l'implementation du probleme en mode matrix */
 /* ------------------------------------------------------------------------ */
 /* Implementation du probleme en mode sse */
+#ifdef PAPI
+	PAPI_WRITE = 0;
+#endif
 	gettimeofday(&debsse, NULL);
 	for(k=0;k<niter;k++) {
 		for(i=0;i<npart;i++) {
+#ifdef PAPI
+				PAPI_WRITE+=1;
+				if(PAPI_WRITE==1) {
+					if(PAPI_start_counters(events,NUMEVENTS)!=PAPI_OK) exit(1);
+				}
+#endif
 		FXd = _mm_setzero_pd();
 		FYd = _mm_setzero_pd();
 		FZd = _mm_setzero_pd();
@@ -282,6 +419,20 @@ int main(int argc,char *argv[]) {
 		rXsse[i] = rXsse[i] + deltat * FX / rM[i];
 		rYsse[i] = rYsse[i] + deltat * FY / rM[i];
 		rZsse[i] = rZsse[i] + deltat * FZ / rM[i];
+#ifdef PAPI
+				if(PAPI_WRITE==1) {
+					/* Write the number of cache misses for the Loop */
+					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
+
+					printf("\tEn mode sse\n ");
+					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
+					/* Stop counting */
+					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
+					/* reset the PAPI counters */
+					if(PAPI_reset(event_set)!=PAPI_OK) exit(1);
+				}
+#endif
 		}
 #ifdef CHECK
 		for(i=0;i<npart;i++) {
