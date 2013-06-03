@@ -33,13 +33,14 @@ int main(int argc,char *argv[]) {
 
 
 	int i,j,k,l,m;
+	double _sqrt_ ;
 
 /* ------------------------------------------------------------------------ */
 /* Structure en mode basique */
 
-        struct position* __attribute__ ((aligned (32))) r;
+        struct position* r; /* struct position* __attribute__ ((aligned (32))) r; */
 #ifdef CHECK
-        struct position* __attribute__ ((aligned (32))) rcheck;
+        struct position* rcheck; /* struct position* __attribute__ ((aligned (32))) rcheck; */
 #endif
 
         struct position u;
@@ -66,9 +67,9 @@ int main(int argc,char *argv[]) {
 	double  rM[npart];
 
 	/* Structure de la Matrice */
-        double m_val[2*npart-1] __attribute__ ((aligned (32))) ;
-        int m_i[2*npart] __attribute__ ((aligned (8))) ;
-        int m_j[npart] __attribute__ ((aligned (8))) ;
+        double m_val[2*npart-1]; /* __attribute__ ((aligned (32))) ; */
+        int m_i[2*npart]; /* __attribute__ ((aligned (8))) ; */
+        int m_j[npart]; /* __attribute__ ((aligned (8))) ; */
 
 /* ------------------------------------------------------------------------ */
 /* Structure en mode sse */
@@ -100,7 +101,7 @@ int main(int argc,char *argv[]) {
 #ifdef PAPI
         int retval,event_set=PAPI_NULL;
         long_long   values[NUMEVENTS];
-        int events[NUMEVENTS] = {PAPI_FP_INS,PAPI_TOT_INS};
+        int events[NUMEVENTS] = {PAPI_L2_DCM,PAPI_TOT_INS};
 	int PAPI_WRITE;
 
         /* Initialize PAPI Library */
@@ -158,7 +159,8 @@ int main(int argc,char *argv[]) {
                                 u.Y = r[i].Y - r[j].Y ;
                                 u.Z = r[i].Z - r[j].Z ;
 
-                                res0 = (double) 1.0 / sqrt(u.X * u.X + u.Y * u.Y + u.Z * u.Z);
+				_sqrt_ = sqrt(u.X * u.X + u.Y * u.Y + u.Z * u.Z);
+                                res0 = (double) 1.0 / _sqrt_ ;
                                 vit = vit + r[i].M * r[j].M * res0;
 
                                 F.X = res0 * res0 * res0 * u.X;
@@ -170,7 +172,7 @@ int main(int argc,char *argv[]) {
 					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 					printf("\tEn mode basique array struct\n ");
-					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 					/* Stop counting */
 					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
@@ -193,7 +195,7 @@ int main(int argc,char *argv[]) {
 					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 					printf("\tEn mode basique array struct\n ");
-					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 					/* Stop counting */
 					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
@@ -230,7 +232,8 @@ int main(int argc,char *argv[]) {
                                 u.Y = rY[i] - rY[j] ;
                                 u.Z = rZ[i] - rZ[j] ;
 
-                                res0 = (double) 1.0 / sqrt(u.X * u.X + u.Y * u.Y + u.Z * u.Z);
+				_sqrt_ = sqrt(u.X * u.X + u.Y * u.Y + u.Z * u.Z);
+                                res0 = (double) 1.0 / _sqrt_ ;
                                 vit = vit + r[i].M * r[j].M * res0;
 
                                 F.X = res0 * res0 * res0 * u.X;
@@ -242,7 +245,7 @@ int main(int argc,char *argv[]) {
 					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 					printf("\tEn mode basique struct array\n ");
-					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 					/* Stop counting */
 					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
@@ -293,8 +296,8 @@ int main(int argc,char *argv[]) {
 					uY  = rY[i] - rY[j] ; 
 					uZ  = rZ[i] - rZ[j] ; 
 
-					res = sqrt (uX*uX + uY*uY + uZ*uZ) ;
-					res = (double) 1.0 / res ;
+					_sqrt_ = sqrt (uX*uX + uY*uY + uZ*uZ) ;
+					res = (double) 1.0 / _sqrt_ ;
 /* Remplissage de la matrice creuse CSR => remplissage de (i,j,val)*/
 					m_val[2*j]   = res;
 					m_val[2*j+1] = -1.0 * res;
@@ -316,7 +319,7 @@ int main(int argc,char *argv[]) {
 					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 					printf("\tEn mode matriciel: remplissage\n ");
-					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 					/* Stop counting */
 					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
@@ -347,7 +350,7 @@ int main(int argc,char *argv[]) {
 				if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 				printf("\tEn mode matriciel: calcul\n ");
-				printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+				printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 				printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 				/* Stop counting */
 				if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
@@ -425,7 +428,7 @@ int main(int argc,char *argv[]) {
 					if(PAPI_read_counters(values,NUMEVENTS)!=PAPI_OK) exit(1);
 
 					printf("\tEn mode sse\n ");
-					printf("\tPAPI_FP_INS =%lli\n ",values[0]);
+					printf("\tPAPI_L2_DCM =%lli\n ",values[0]);
 					printf("\tPAPI_TOT_INS =%lli\n ",values[1]);
 					/* Stop counting */
 					if(PAPI_stop_counters(values,NUMEVENTS) != PAPI_OK) exit(1);
