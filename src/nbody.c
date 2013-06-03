@@ -116,7 +116,7 @@ int main(int argc,char *argv[]) {
 	printf("_________________________________________________________________________\n\n");
 
 /* ------------------------------------------------------------------------ */
-/* Implementation du probleme en mode basique */
+/* Implementation du probleme en mode basique array struct */
 	gettimeofday(&debbase, NULL);
         for(k=0;k<niter;k++) {
                 for(i=0;i<npart;i++) {
@@ -144,10 +144,45 @@ int main(int argc,char *argv[]) {
         }
 
 	gettimeofday(&endbase, NULL);
-	printf("duree en mode basique = \t");
+	printf("duree en mode basique array struct = \t");
 	printf(" %ld\n", ((endbase.tv_sec * 1000000 + endbase.tv_usec) - (debbase.tv_sec * 1000000 + debbase.tv_usec)));
 	printf("_________________________________________________________________________\n\n");
-/* Fin de l'implementation du probleme en mode basique */
+/* Fin de l'implementation du probleme en mode basique array struct */
+/* ------------------------------------------------------------------------ */
+/* Implementation du probleme en mode basique struct array */
+	gettimeofday(&debbase, NULL);
+        for(k=0;k<niter;k++) {
+                for(i=0;i<npart;i++) {
+                        for(j=0;j<npart;j++) {
+                                u.X = rX[i] - rX[j] ;
+                                u.Y = rY[i] - rY[j] ;
+                                u.Z = rZ[i] - rZ[j] ;
+
+                                res0 = (double) 1.0 / sqrt(u.X * u.X + u.Y * u.Y + u.Z * u.Z);
+                                vit = vit + r[i].M * r[j].M * res0;
+
+                                F.X = res0 * res0 * res0 * u.X;
+                                F.Y = res0 * res0 * res0 * u.Y;
+                                F.Z = res0 * res0 * res0 * u.Z;
+                        }
+			rX[i] = rX[i] + deltat * F.X / rM[i] ; 
+			rY[i] = rY[i] + deltat * F.Y / rM[i] ;
+			rZ[i] = rZ[i] + deltat * F.Z / rM[i] ;
+#ifdef CHECK
+		for(i=0;i<npart;i++) {
+			if((rX[i] - rcheck[i].X) > 1.e-9 ) {printf("rX[%i] = %f et rcheck[%i].X = %f\n",i,rX[i],i,rcheck[i].X);  }
+			if((rY[i] - rcheck[i].Y) > 1.e-9 ) {printf("rY[%i] = %f et rcheck[%i].Y = %f\n",i,rY[i],i,rcheck[i].Y);  }
+			if((rZ[i] - rcheck[i].Z) > 1.e-9 ) {printf("rZ[%i] = %f et rcheck[%i].Z = %f\n",i,rZ[i],i,rcheck[i].Z);  }
+		}
+#endif
+                }
+        }
+
+	gettimeofday(&endbase, NULL);
+	printf("duree en mode basique struct array = \t");
+	printf(" %ld\n", ((endbase.tv_sec * 1000000 + endbase.tv_usec) - (debbase.tv_sec * 1000000 + debbase.tv_usec)));
+	printf("_________________________________________________________________________\n\n");
+/* Fin de l'implementation du probleme en mode basique struct array */
 /* ------------------------------------------------------------------------ */
 /* Implementation du probleme en mode matriciel */
 	gettimeofday(&debmat, NULL);

@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <emmintrin.h>
 
-#define npart 500000
+#define npart 10000
 #define niter 1
 #define deltat 0.001 
 #define dim 3 
